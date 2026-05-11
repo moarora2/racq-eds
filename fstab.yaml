@@ -1,0 +1,5 @@
+mountpoints:
+  /:
+    url: "https://author-p9606-e71941.adobeaemcloud.com/bin/franklin.delivery/moarora2/racq-eds/main"
+    type: "markup"
+    suffix: ".html"
