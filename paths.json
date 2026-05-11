@@ -1,6 +1,9 @@
 {
   "mappings": [
-    "/:/"
+    "/:/",
+    "/content/racq/:/",
+    "/content/racq/configuration:/.helix/config.json",
+    "/content/racq/metadata:/metadata.json"
   ],
   "includes": [
     "/content/",
