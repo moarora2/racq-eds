@@ -17,8 +17,8 @@
       "columns",
       "fragment",
       "form",
-      "embed",
-      "embed-adaptive-form"
+      "embed-adaptive-form",
+      "store-detail"
     ]
   },
   {

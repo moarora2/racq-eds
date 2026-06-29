@@ -4937,5 +4937,19 @@
         "valueType": "string"
       }
     ]
+  },
+  {
+    "id": "store-detail",
+    "fields": [
+      {
+        "component": "aem-content-fragment",
+        "valueType": "string",
+        "name": "storeFragment",
+        "label": "Store Content Fragment",
+        "variationName": "contentFragmentVariation",
+        "description": "Select the store content fragment to display",
+        "multi": false
+      }
+    ]
   }
 ]
