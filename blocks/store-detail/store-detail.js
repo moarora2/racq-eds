@@ -1,6 +1,6 @@
 /**
  * Store Detail Block
- * Displays detailed store information from a Content Fragment
+ * Displays detailed store information rendered server-side
  */
 
 import { createOptimizedPicture } from '../../scripts/aem.js';
@@ -32,8 +32,8 @@ function extractDataFromRows(rows) {
         src: img.getAttribute('src'),
         alt: img.getAttribute('alt') || 'Image',
       });
-    } else if (link && !text.startsWith('/content/dam/')) {
-      // Link (not a CF reference)
+    } else if (link) {
+      // Link found
       data.links.push({
         href: link.getAttribute('href'),
         text: link.textContent,
@@ -150,90 +150,12 @@ function buildStoreContent(data) {
 }
 
 /**
- * Client-side CF fetch fallback
- */
-async function fetchAndInjectCF(block, cfPath) {
-  try {
-    const response = await fetch(`${cfPath}.json`);
-    if (!response.ok) {
-      throw new Error(`CF fetch failed: ${response.status}`);
-    }
-
-    const cfData = await response.json();
-    const elements = cfData.elements || {};
-
-    // Clear block
-    block.innerHTML = '';
-
-    // Transform CF to block rows
-    Object.entries(elements).forEach(([fieldName, fieldData]) => {
-      const { value } = fieldData;
-      if (!value) return;
-
-      const row = document.createElement('div');
-      const cell = document.createElement('div');
-
-      // Handle images
-      if (fieldData.dataType === 'image' || fieldName.toLowerCase().includes('image')) {
-        const imageUrl = typeof value === 'string' ? value : (value.src || value.path);
-        if (imageUrl) {
-          const img = document.createElement('img');
-          img.src = imageUrl;
-          img.alt = fieldName.replace(/([A-Z])/g, ' $1').trim();
-          cell.appendChild(img);
-        }
-      } else {
-        // Plain or rich text
-        cell.innerHTML = value;
-      }
-
-      row.appendChild(cell);
-      block.appendChild(row);
-    });
-
-    block.setAttribute('data-cf-resolved', 'client');
-  } catch (error) {
-    console.error('Error fetching CF:', error);
-    block.innerHTML = '<p class="error">Error loading store information</p>';
-  }
-}
-
-/**
  * Main decorate function
  */
 export default async function decorate(block) {
   const rows = [...block.children];
 
-  // Check if CF was resolved by BYOM
-  const cfResolved = block.getAttribute('data-cf-resolved') === 'true';
-  const cfPath = block.getAttribute('data-cf-path');
-
-  if (!cfResolved) {
-    // Client-side fallback: check if first row has CF reference
-    const firstCell = rows[0]?.querySelector('div');
-    const cfLink = firstCell?.querySelector('a');
-    const cfPathFromContent = cfLink?.getAttribute('href') || firstCell?.textContent?.trim();
-
-    if (cfPathFromContent?.startsWith('/content/dam/')) {
-      block.innerHTML = '<div class="store-loading">Loading store details...</div>';
-      await fetchAndInjectCF(block, cfPathFromContent);
-
-      // Re-extract rows after client-side fetch
-      const newRows = [...block.children];
-      const data = extractDataFromRows(newRows);
-      const content = buildStoreContent(data);
-
-      block.innerHTML = '';
-      block.appendChild(content);
-      block.setAttribute('data-store-path', cfPathFromContent);
-      return;
-    }
-
-    block.innerHTML = '<p>No store information available</p>';
-    return;
-  }
-
-  // BYOM resolved: extract data from rows
+  // Extract data from server-rendered rows
   const data = extractDataFromRows(rows);
 
   // Build content
@@ -242,7 +164,4 @@ export default async function decorate(block) {
   // Replace block content
   block.innerHTML = '';
   block.appendChild(content);
-
-  // Add metadata
-  block.setAttribute('data-store-path', cfPath);
 }
