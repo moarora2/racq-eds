@@ -167,7 +167,7 @@ async function fetchAndInjectCF(block, cfPath) {
 
     // Transform CF to block rows
     Object.entries(elements).forEach(([fieldName, fieldData]) => {
-      const value = fieldData.value;
+      const { value } = fieldData;
       if (!value) return;
 
       const row = document.createElement('div');
