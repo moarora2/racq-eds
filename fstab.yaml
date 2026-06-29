@@ -1,8 +1,0 @@
-mountpoints:
-  /:
-    url: "https://author-p9606-e71941.adobeaemcloud.com/bin/franklin.delivery/moarora2/racq-eds/main"
-    type: "markup"
-    suffix: ".html"
-    overlay:
-      url: "https://27420-deloittebyomoverlay-stage.adobeioruntime.net/api/v1/web/deloitte-byom-overlay/page-overlay"
-      type: "markup"
